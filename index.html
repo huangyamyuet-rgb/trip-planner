@@ -1,273 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Trip Planner</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Segoe UI',Roboto,sans-serif;
-}
-body{
-  background:#4f46e5;
-  min-height:100vh;
-  padding:20px;
-}
-.container{
-  max-width:900px;
-  margin:0 auto;
-  background:#fff;
-  border-radius:20px;
-  padding:35px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.15);
-}
-.header{
-  text-align:center;
-  margin-bottom:30px;
-}
-.header h1{
-  color:#111;
-  font-size:28px;
-  margin-bottom:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-}
-.header p{
-  color:#555;
-}
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:18px;
-  margin-bottom:25px;
-}
-.form-group{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
-.form-group label{
-  font-weight:600;
-  color:#222;
-  font-size:14px;
-}
-.form-group input,
-.form-group select,
-.form-group textarea{
-  padding:12px 14px;
-  border:1px solid #ddd;
-  border-radius:10px;
-  font-size:15px;
-}
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus{
-  outline:none;
-  border-color:#4f46e5;
-}
-.form-group textarea{
-  min-height:90px;
-  resize:vertical;
-}
-.btn-generate{
-  width:100%;
-  padding:15px;
-  background:#4f46e5;
-  color:white;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.2s;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-}
-.btn-generate:hover{
-  background:#4338ca;
-}
-.btn-generate:disabled{
-  opacity:0.6;
-  cursor:not-allowed;
-}
-.result{
-  margin-top:30px;
-  padding:25px;
-  background:#f8fafc;
-  border-radius:15px;
-  display:none;
-  white-space:pre-line;
-  line-height:1.65;
-  color:#111;
-}
-.loading{
-  color:#4f46e5;
-  text-align:center;
-  padding:15px;
-}
-.error{
-  color:#dc2626;
-  text-align:center;
-  padding:15px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hong Kong Trip Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        neutral: '#F5F7FA'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+            .btn-gradient { background: linear-gradient(135deg, #165DFF, #36CFC9); }
+        }
+    </style>
 </head>
-<body>
+<body class="bg-neutral min-h-screen">
+    <header class="bg-white shadow sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa fa-plane text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-primary">AI Trip Planner</h1>
+            </div>
+        </div>
+    </header>
 
-<div class="container">
-  <div class="header">
-    <h1><i class="fas fa-globe-americas"></i> AI Trip Planner</h1>
-    <p>Generate your perfect travel itinerary in seconds</p>
-  </div>
+    <main class="container mx-auto px-4 py-8">
+        <section class="max-w-4xl mx-auto bg-white rounded-2xl p-6 md:p-10 card-shadow mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-center">Hong Kong Travel Plan</h2>
+            <form id="tripForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-gray-700 font-medium"><i class="fa fa-map-marker text-primary mr-1"></i>Destination</label>
+                    <input type="text" id="destination" value="Hong Kong" required class="w-full px-4 py-3 border rounded-lg">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-gray-700 font-medium"><i class="fa fa-money text-primary mr-1"></i>Budget (HKD)</label>
+                    <input type="number" id="budget" placeholder="e.g. 10000" required class="w-full px-4 py-3 border rounded-lg">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-gray-700 font-medium"><i class="fa fa-heart text-primary mr-1"></i>Interests</label>
+                    <input type="text" placeholder="Food, Shopping, Culture" required class="w-full px-4 py-3 border rounded-lg">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-gray-700 font-medium"><i class="fa fa-users text-primary mr-1"></i>Travelers</label>
+                    <input type="number" min="1" value="2" required class="w-full px-4 py-3 border rounded-lg">
+                </div>
+                <div class="space-y-2 md:col-span-2">
+                    <label class="text-gray-700 font-medium"><i class="fa fa-calendar text-primary mr-1"></i>Travel Dates</label>
+                    <input type="text" id="tripDates" placeholder="Select dates" required class="w-full px-4 py-3 border rounded-lg">
+                </div>
+                <div class="md:col-span-2 mt-2">
+                    <button type="submit" class="w-full btn-gradient text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2">
+                        <i class="fa fa-magic"></i> Generate Food & Attraction Plan
+                    </button>
+                </div>
+            </form>
+        </section>
 
-  <div class="form-grid">
-    <div class="form-group">
-      <label>Destination</label>
-      <input type="text" id="destination" placeholder="e.g. Tokyo, Bali, Paris" required>
-    </div>
+        <div id="loading" class="hidden flex flex-col items-center py-10">
+            <div class="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <p class="text-gray-600 mt-4">Generating your Hong Kong food & attraction itinerary...</p>
+        </div>
 
-    <div class="form-group">
-      <label>Start Date</label>
-      <input type="date" id="startDate" required>
-    </div>
+        <section id="resultSection" class="max-w-5xl mx-auto hidden">
+            <div class="bg-white rounded-2xl p-6 md:p-10 card-shadow">
+                <h2 class="text-2xl font-bold text-primary mb-6">Your Hong Kong Itinerary</h2>
+                <div id="tripInfo" class="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 bg-primary/5 rounded-xl mb-8"></div>
+                <div id="tripDetail" class="space-y-8"></div>
+            </div>
+        </section>
+    </main>
 
-    <div class="form-group">
-      <label>End Date</label>
-      <input type="date" id="endDate" required>
-    </div>
+    <script>
+        flatpickr("#tripDates", { mode: "range", dateFormat: "Y-m-d", minDate: "today" });
 
-    <div class="form-group">
-      <label>Travelers</label>
-      <input type="number" id="travelers" min="1" value="2" required>
-    </div>
+        // Full-day attractions
+        const fullDaySpots = [
+            "Hong Kong Disneyland",
+            "Ocean Park",
+            "Lantau Island & Big Buddha",
+            "Ngong Ping 360 + Tai O Village",
+            "Lamma Island Day Tour",
+            "Cheung Chau Island Day Tour"
+        ];
 
-    <div class="form-group">
-      <label>Budget</label>
-      <select id="budget">
-        <option value>Budget Type</option>
-        <option value="Budget">Budget (Low Cost)</option>
-        <option value="Moderate" selected>Moderate (Balanced)</option>
-        <option value="Luxury">Luxury (High End)</option>
-      </select>
-    </div>
+        // Normal spots (no repetition)
+        const normalSpots = [
+            "Victoria Harbour",
+            "The Peak (Victoria Peak)",
+            "Tsim Sha Tsui Avenue of Stars",
+            "K11 Musea",
+            "Harbour City",
+            "Causeway Bay",
+            "Times Square",
+            "Mong Kok",
+            "Ladies Market",
+            "Temple Street Night Market",
+            "Central",
+            "Soho District",
+            "Hollywood Road",
+            "Man Mo Temple",
+            "Wan Chai",
+            "Golden Bauhinia Square",
+            "Stanley Market",
+            "Repulse Bay",
+            "Shek O",
+            "West Kowloon Cultural District",
+            "M+ Museum",
+            "Hong Kong Palace Museum",
+            "Kowloon Park",
+            "Clock Tower"
+        ];
 
-    <div class="form-group" style="grid-column:1/-1;">
-      <label>Interests & Preferences</label>
-      <textarea id="interests" placeholder="e.g. food, nature, history, beach, shopping, family friendly, quiet, adventure..."></textarea>
-    </div>
-  </div>
+        // Hong Kong local food
+        const hkBreakfast = [
+            "Pineapple Bun + Iced Hong Kong Milk Tea",
+            "French Toast with Condensed Milk",
+            "Shrimp Wonton Noodles",
+            "Scrambled Egg Sandwich + Lemon Tea",
+            "Hong Kong Style Egg Tart"
+        ];
 
-  <button class="btn-generate" id="generateBtn" onclick="generatePlan()">
-    <i class="fas fa-rocket"></i> Generate Trip Plan
-  </button>
+        const hkLunch = [
+            "BBQ Pork & Duck Rice (Siu Lap)",
+            "Beef Brisket Noodles",
+            "Claypot Rice with Chinese Sausage",
+            "Cart Noodles with Fish Balls & Tripe",
+            "Wonton Noodle Soup",
+            "Hong Kong Style Fried Rice"
+        ];
 
-  <div class="result" id="resultSection"></div>
-</div>
+        const hkDinner = [
+            "Dinner at Temple Street Dai Pai Dong",
+            "Seafood Platter at Repulse Bay",
+            "Cantonese Cuisine with Victoria Harbour View",
+            "Hot Pot Soup with Local Ingredients",
+            "Beef Wagyu Congee & Youtiao",
+            "Night Market Seafood Snack Feast"
+        ];
 
-<script>
-function generatePlan() {
-  const dest = document.getElementById('destination').value.trim();
-  const start = document.getElementById('startDate').value;
-  const end = document.getElementById('endDate').value;
-  const people = document.getElementById('travelers').value;
-  const budget = document.getElementById('budget').value;
-  const interests = document.getElementById('interests').value.trim();
-  const btn = document.getElementById('generateBtn');
-  const res = document.getElementById('resultSection');
+        const disneyDining = [
+            "Royal Banquet Hall Cantonese Set",
+            "Rocket Restaurant Burger & Fries",
+            "Main Street Corner Bakery Snacks"
+        ];
 
-  if (!dest || !start || !end || !people || !budget) {
-    alert('Please fill all required fields');
-    return;
-  }
+        const oceanParkDining = [
+            "Sea Lion Whale Watching Restaurant",
+            "Hong Kong Old Street Fish Balls & Egg Puffs",
+            "Polar Adventure Western Meal"
+        ];
 
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-  res.style.display = 'block';
-  res.innerHTML = '<div class="loading">Creating your personalized itinerary...</div>';
+        // Get random food
+        function getBreakfast() { return hkBreakfast[Math.floor(Math.random()*hkBreakfast.length)]; }
+        function getLunch() { return hkLunch[Math.floor(Math.random()*hkLunch.length)]; }
+        function getDinner() { return hkDinner[Math.floor(Math.random()*hkDinner.length)]; }
+        function getDisneyMeal() { return disneyDining[Math.floor(Math.random()*disneyDining.length)]; }
+        function getOceanParkMeal() { return oceanParkDining[Math.floor(Math.random()*oceanParkDining.length)]; }
 
-  setTimeout(() => {
-    try {
-      const plan = `
-Your ${daysBetween(start, end)}-Day Travel Plan to ${dest.toUpperCase()}
+        // Main generate logic
+        document.getElementById("tripForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const loading = document.getElementById("loading");
+            const result = document.getElementById("resultSection");
+            loading.classList.remove("hidden");
+            result.classList.add("hidden");
 
-📅 Travel Period: ${formatDate(start)} to ${formatDate(end)}
-👥 Travelers: ${people}
-💰 Budget: ${budget}
-✨ Interests: ${interests || 'General sightseeing'}
+            const budget = document.getElementById("budget").value;
+            const dates = document.getElementById("tripDates")._flatpickr.selectedDates;
+            const days = Math.ceil((dates[1]-dates[0])/86400000)+1;
+            const start = dates[0].toISOString().split("T")[0];
+            const end = dates[1].toISOString().split("T")[0];
 
----
+            await new Promise(r => setTimeout(r, 2200));
 
-DAY 1: Arrival & City Orientation
-- Check into accommodation
-- Visit central landmarks
-- Local dinner & easy walk
+            // Copy arrays to avoid repetition
+            let usedNormal = [];
+            let usedFullDay = [];
+            let plan = [];
 
-DAY 2: Main Attractions
-- Top sightseeing spots
-- Recommended local food
-- Transportation tips
+            for (let day=1; day<=days; day++) {
+                let isFullDay = (day <= 2 && days >= 3) || (Math.random() < 0.3);
+                let schedule;
 
-DAY 3: Culture & Experience
-- Museums, local markets or nature spots
-- Free time for shopping or relaxation
+                if (isFullDay && usedFullDay.length < fullDaySpots.length) {
+                    // Full day: Disney / Ocean Park etc.
+                    let availFull = fullDaySpots.filter(s => !usedFullDay.includes(s));
+                    let spot = availFull[Math.floor(Math.random()*availFull.length)];
+                    usedFullDay.push(spot);
 
-DAY 4: Day Trip / Adventure
-- Optional day trip nearby
-- Outdoor or cultural activity
-- Evening leisure
+                    let dining = spot.includes("Disney") ? getDisneyMeal() : spot.includes("Ocean") ? getOceanParkMeal() : getLunch();
 
-DAY 5: Relaxation & Departure
-- Brunch & last-minute exploration
-- Head to airport/station
+                    schedule = [
+                        { time: "08:00-09:00", act: `Breakfast: ${getBreakfast()}`, cost: Math.round(budget/days/2*0.12) },
+                        { time: "09:30-17:30", act: `${spot} (Full Day Visit)`, cost: Math.round(budget/days/2*0.6) },
+                        { time: "12:30-14:00", act: `Lunch Inside Park: ${dining}`, cost: Math.round(budget/days/2*0.18) },
+                        { time: "18:00-20:00", act: `Dinner: ${getDinner()}`, cost: Math.round(budget/days/2*0.1) }
+                    ];
+                } else {
+                    // Morning spot
+                    let availMorn = normalSpots.filter(s => !usedNormal.includes(s));
+                    let morn = availMorn[Math.floor(Math.random()*availMorn.length)];
+                    usedNormal.push(morn);
 
----
-ACCOMMODATION SUGGESTIONS:
-- Near city center for convenience
-- Match your ${budget} budget
+                    // Afternoon spot (no repeat)
+                    let availAft = normalSpots.filter(s => !usedNormal.includes(s));
+                    let aft = availAft[Math.floor(Math.random()*availAft.length)];
+                    usedNormal.push(aft);
 
-TRANSPORTATION:
-- Public transit / walk / ride-hailing based on location
+                    schedule = [
+                        { time: "08:00-09:00", act: `Breakfast: ${getBreakfast()}`, cost: Math.round(budget/days/2*0.12) },
+                        { time: "09:30-12:00", act: morn, cost: Math.round(budget/days/2*0.28) },
+                        { time: "12:30-14:00", act: `Lunch: ${getLunch()}`, cost: Math.round(budget/days/2*0.2) },
+                        { time: "14:30-17:30", act: aft, cost: Math.round(budget/days/2*0.25) },
+                        { time: "18:00-20:00", act: `Dinner: ${getDinner()}`, cost: Math.round(budget/days/2*0.15) }
+                    ];
+                }
 
-TIPS:
-- Bring comfortable shoes
-- Check local weather
-- Respect local customs
-- Keep digital copies of documents
-      `;
+                plan.push({ day, schedule });
+            }
 
-      res.innerText = plan;
+            // Render result
+            document.getElementById("tripInfo").innerHTML = `
+                <div class="flex gap-2 items-center"><i class="fa fa-map-marker text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Destination</p><p class="font-medium">HONG KONG</p></div></div>
+                <div class="flex gap-2 items-center"><i class="fa fa-money text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Budget</p><p class="font-medium">HK$${Number(budget).toLocaleString()}</p></div></div>
+                <div class="flex gap-2 items-center"><i class="fa fa-calendar text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Period</p><p class="font-medium">${start} to ${end}</p></div></div>
+                <div class="flex gap-2 items-center"><i class="fa fa-cutlery text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Food</p><p class="font-medium">Local Hong Kong Cuisine</p></div></div>
+            `;
 
-    } catch (e) {
-      res.innerHTML = '<div class="error">Failed to generate plan. Please try again.</div>';
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-rocket"></i> Generate Trip Plan';
-    }
-  }, 1800);
-}
+            let out = document.getElementById("tripDetail");
+            out.innerHTML = "";
+            plan.forEach(day => {
+                let html = `<div class="border rounded-xl overflow-hidden mb-6">
+                    <div class="bg-primary/10 p-4 font-bold text-lg">Day ${day.day}</div>
+                    <div class="p-5 space-y-4">`;
+                day.schedule.forEach(item => {
+                    html += `
+                    <div class="flex gap-4 pb-4 border-b">
+                        <div class="w-32"><span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">${item.time}</span></div>
+                        <div class="flex-1"><h4 class="font-bold text-lg">${item.act}</h4><p class="text-primary font-medium">HK$${item.cost}</p></div>
+                    </div>`;
+                });
+                html += "</div></div>";
+                out.innerHTML += html;
+            });
 
-function daysBetween(start, end) {
-  const a = new Date(start);
-  const b = new Date(end);
-  const diff = Math.abs(b - a);
-  return Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
-}
-
-function formatDate(d) {
-  if (!d) return '';
-  const date = new Date(d);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric'
-  });
-}
-</script>
+            loading.classList.add("hidden");
+            result.classList.remove("hidden");
+        });
+    </script>
 </body>
 </html>
