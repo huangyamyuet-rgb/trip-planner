@@ -3,265 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Hong Kong Trip Planner</title>
+    <title>AI Trip Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#165DFF',
-                        neutral: '#F5F7FA'
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .card-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-            .btn-gradient { background: linear-gradient(135deg, #165DFF, #36CFC9); }
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#165DFF',neutral:'#F5F7FA'}}}}</script>
 </head>
 <body class="bg-neutral min-h-screen">
-    <header class="bg-white shadow sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <i class="fa fa-plane text-primary text-2xl"></i>
-                <h1 class="text-xl font-bold text-primary">AI Trip Planner</h1>
-            </div>
-        </div>
-    </header>
+<header class="bg-white shadow sticky top-0 z-50">
+    <div class="container px-4 py-4 flex items-center gap-2">
+        <i class="fa fa-plane text-primary text-2xl"></i>
+        <h1 class="text-xl font-bold text-primary">AI Trip Planner</h1>
+    </div>
+</header>
 
-    <main class="container mx-auto px-4 py-8">
-        <section class="max-w-4xl mx-auto bg-white rounded-2xl p-6 md:p-10 card-shadow mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-center">Hong Kong Travel Plan</h2>
-            <form id="tripForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label class="text-gray-700 font-medium"><i class="fa fa-map-marker text-primary mr-1"></i>Destination</label>
-                    <input type="text" id="destination" value="Hong Kong" required class="w-full px-4 py-3 border rounded-lg">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-gray-700 font-medium"><i class="fa fa-money text-primary mr-1"></i>Budget (HKD)</label>
-                    <input type="number" id="budget" placeholder="e.g. 10000" required class="w-full px-4 py-3 border rounded-lg">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-gray-700 font-medium"><i class="fa fa-heart text-primary mr-1"></i>Interests</label>
-                    <input type="text" placeholder="Food, Shopping, Culture" required class="w-full px-4 py-3 border rounded-lg">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-gray-700 font-medium"><i class="fa fa-users text-primary mr-1"></i>Travelers</label>
-                    <input type="number" min="1" value="2" required class="w-full px-4 py-3 border rounded-lg">
-                </div>
-                <div class="space-y-2 md:col-span-2">
-                    <label class="text-gray-700 font-medium"><i class="fa fa-calendar text-primary mr-1"></i>Travel Dates</label>
-                    <input type="text" id="tripDates" placeholder="Select dates" required class="w-full px-4 py-3 border rounded-lg">
-                </div>
-                <div class="md:col-span-2 mt-2">
-                    <button type="submit" class="w-full btn-gradient text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2">
-                        <i class="fa fa-magic"></i> Generate Food & Attraction Plan
-                    </button>
-                </div>
-            </form>
-        </section>
+<main class="container px-4 py-8 max-w-4xl mx-auto">
+<section class="bg-white rounded-2xl p-6 shadow mb-6">
+    <h2 class="text-xl font-bold mb-4 text-center">Travel Plan</h2>
+    <form id="form1" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div><label class="text-sm">Destination</label><input id="city" placeholder="hong kong/tokyo/seoul/bangkok" class="w-full p-2 border rounded"></div>
+        <div><label class="text-sm">Budget (HKD)</label><input id="budget" type="number" class="w-full p-2 border rounded"></div>
+        <div><label class="text-sm">Travelers</label><input id="people" type="number" value="2" class="w-full p-2 border rounded"></div>
+        <div><label class="text-sm">Dates</label><input id="dates" class="w-full p-2 border rounded"></div>
+        <button type="button" onclick="generatePlan()" class="md:col-span-2 bg-primary text-white p-2 rounded">Generate</button>
+    </form>
+</section>
 
-        <div id="loading" class="hidden flex flex-col items-center py-10">
-            <div class="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            <p class="text-gray-600 mt-4">Generating your Hong Kong food & attraction itinerary...</p>
+<div id="loading" class="hidden text-center py-4">
+    <div class="w-10 h-10 border-4 border-t-primary rounded-full animate-spin mx-auto"></div>
+</div>
+
+<section id="result" class="hidden">
+    <div class="bg-white rounded-2xl p-6 shadow">
+        <h3 class="font-bold mb-3">Your Itinerary</h3>
+        <div id="tripInfo" class="text-sm p-3 bg-blue-50 rounded mb-3"></div>
+
+        <div class="mb-3">
+            <label class="font-sm">AI Adjust Plan:</label>
+            <input id="aiInput" placeholder="cheaper / add shopping / change food" class="w-full p-2 border rounded mt-1">
+            <!-- 改用 onclick 事件，兼容所有浏览器 -->
+            <button onclick="applyAIChange()" class="mt-1 bg-primary text-white px-3 py-1 rounded">Apply AI Change</button>
         </div>
 
-        <section id="resultSection" class="max-w-5xl mx-auto hidden">
-            <div class="bg-white rounded-2xl p-6 md:p-10 card-shadow">
-                <h2 class="text-2xl font-bold text-primary mb-6">Your Hong Kong Itinerary</h2>
-                <div id="tripInfo" class="grid grid-cols-1 md:grid-cols-4 gap-4 p-5 bg-primary/5 rounded-xl mb-8"></div>
-                <div id="tripDetail" class="space-y-8"></div>
-            </div>
-        </section>
-    </main>
+        <div id="tripDetail" class="space-y-3"></div>
+    </div>
+</section>
+</main>
 
-    <script>
-        flatpickr("#tripDates", { mode: "range", dateFormat: "Y-m-d", minDate: "today" });
+<script>
+// 初始化日期选择器
+flatpickr("#dates",{mode:"range",dateFormat:"Y-m-d",minDate:"today"});
 
-        // Full-day attractions
-        const fullDaySpots = [
-            "Hong Kong Disneyland",
-            "Ocean Park",
-            "Lantau Island & Big Buddha",
-            "Ngong Ping 360 + Tai O Village",
-            "Lamma Island Day Tour",
-            "Cheung Chau Island Day Tour"
-        ];
+// 城市数据
+const cityData = {
+  "hong kong":{
+    full:["Disneyland","Ocean Park"],
+    spot:["Victoria Harbour","The Peak","Mong Kok","Causeway Bay","Temple Street"],
+    food:{
+      b:["Pineapple Bun + Milk Tea", "Wonton Noodles", "Egg Tart + Lemon Tea", "French Toast"],
+      l:["BBQ Pork Rice", "Beef Brisket Noodles", "Cart Noodles", "Claypot Rice"],
+      d:["Dai Pai Dong", "Seafood Platter", "Hot Pot", "Cantonese Cuisine"]
+    }
+  },
+  "tokyo":{
+    full:["DisneySea","USJ"],
+    spot:["Shibuya Sky","Meiji Shrine","Senso-ji","Ginza","Harajuku"],
+    food:{
+      b:["Tamagoyaki", "Ramen", "Matcha Breakfast", "Onigiri"],
+      l:["Sushi", "Tempura", "Yakitori", "Tonkotsu Ramen"],
+      d:["Shabu Shabu", "Izakaya", "Sashimi", "Okonomiyaki"]
+    }
+  },
+  "seoul":{
+    full:["Everland","Lotte World"],
+    spot:["Gyeongbokgung","N Seoul Tower","Myeongdong","Hongdae","Bukchon"],
+    food:{
+      b:["Gimbap", "Ramen", "Kimchi Fried Rice", "Tteokbokki"],
+      l:["Bibimbap", "Korean BBQ", "Jjigae Stew", "Korean Fried Chicken"],
+      d:["Chicken & Beer", "Hot Pot", "Street Food", "Samgyeopsal"]
+    }
+  },
+  "bangkok":{
+    full:["Ayutthaya Tour","Safari World"],
+    spot:["Grand Palace","Wat Arun","Chatuchak","Asiatique","Chinatown"],
+    food:{
+      b:["Thai Congee", "Coconut Pancake", "Thai Iced Tea Set", "Khao Soi"],
+      l:["Pad Thai", "Green Curry", "Tom Yum Soup", "Mango Sticky Rice"],
+      d:["Thai BBQ", "Seafood Fried Rice", "Night Market Food", "Massaman Curry"]
+    }
+  }
+};
 
-        // Normal spots (no repetition)
-        const normalSpots = [
-            "Victoria Harbour",
-            "The Peak (Victoria Peak)",
-            "Tsim Sha Tsui Avenue of Stars",
-            "K11 Musea",
-            "Harbour City",
-            "Causeway Bay",
-            "Times Square",
-            "Mong Kok",
-            "Ladies Market",
-            "Temple Street Night Market",
-            "Central",
-            "Soho District",
-            "Hollywood Road",
-            "Man Mo Temple",
-            "Wan Chai",
-            "Golden Bauhinia Square",
-            "Stanley Market",
-            "Repulse Bay",
-            "Shek O",
-            "West Kowloon Cultural District",
-            "M+ Museum",
-            "Hong Kong Palace Museum",
-            "Kowloon Park",
-            "Clock Tower"
-        ];
+// 全局变量存储当前行程
+let currentPlan = [];
+let currentCity = "";
+let currentBudget = 0;
+let currentPeople = 0;
+let currentDays = 0;
 
-        // Hong Kong local food
-        const hkBreakfast = [
-            "Pineapple Bun + Iced Hong Kong Milk Tea",
-            "French Toast with Condensed Milk",
-            "Shrimp Wonton Noodles",
-            "Scrambled Egg Sandwich + Lemon Tea",
-            "Hong Kong Style Egg Tart"
-        ];
+// 生成行程（改用全局函数）
+async function generatePlan() {
+    const loading = document.getElementById("loading");
+    const result = document.getElementById("result");
+    loading.classList.remove("hidden");
+    result.classList.add("hidden");
 
-        const hkLunch = [
-            "BBQ Pork & Duck Rice (Siu Lap)",
-            "Beef Brisket Noodles",
-            "Claypot Rice with Chinese Sausage",
-            "Cart Noodles with Fish Balls & Tripe",
-            "Wonton Noodle Soup",
-            "Hong Kong Style Fried Rice"
-        ];
+    // 获取表单数据
+    currentCity = document.getElementById("city").value.toLowerCase().trim();
+    currentBudget = Number(document.getElementById("budget").value);
+    currentPeople = Number(document.getElementById("people").value);
+    const dateObj = document.getElementById("dates")._flatpickr.selectedDates;
+    currentDays = Math.ceil((dateObj[1] - dateObj[0]) / 86400000) + 1;
+    const city = cityData[currentCity] || cityData["hong kong"];
 
-        const hkDinner = [
-            "Dinner at Temple Street Dai Pai Dong",
-            "Seafood Platter at Repulse Bay",
-            "Cantonese Cuisine with Victoria Harbour View",
-            "Hot Pot Soup with Local Ingredients",
-            "Beef Wagyu Congee & Youtiao",
-            "Night Market Seafood Snack Feast"
-        ];
+    // 延迟模拟加载
+    await new Promise(resolve => setTimeout(resolve, 1200));
 
-        const disneyDining = [
-            "Royal Banquet Hall Cantonese Set",
-            "Rocket Restaurant Burger & Fries",
-            "Main Street Corner Bakery Snacks"
-        ];
+    // 生成不重复的行程
+    let usedFull = [], usedNormal = [];
+    let usedBreakfast = [], usedLunch = [], usedDinner = [];
+    const perDayCost = currentBudget / currentDays / currentPeople;
+    currentPlan = [];
 
-        const oceanParkDining = [
-            "Sea Lion Whale Watching Restaurant",
-            "Hong Kong Old Street Fish Balls & Egg Puffs",
-            "Polar Adventure Western Meal"
-        ];
+    for(let day=1; day<=currentDays; day++) {
+        let isFullDay = (currentDays >=3 && day <=2) || Math.random() < 0.35;
+        let schedule = [];
 
-        // Get random food
-        function getBreakfast() { return hkBreakfast[Math.floor(Math.random()*hkBreakfast.length)]; }
-        function getLunch() { return hkLunch[Math.floor(Math.random()*hkLunch.length)]; }
-        function getDinner() { return hkDinner[Math.floor(Math.random()*hkDinner.length)]; }
-        function getDisneyMeal() { return disneyDining[Math.floor(Math.random()*disneyDining.length)]; }
-        function getOceanParkMeal() { return oceanParkDining[Math.floor(Math.random()*oceanParkDining.length)]; }
+        // 选不重复的食物
+        let bfOpt = city.food.b.filter(x => !usedBreakfast.includes(x));
+        let luOpt = city.food.l.filter(x => !usedLunch.includes(x));
+        let diOpt = city.food.d.filter(x => !usedDinner.includes(x));
+        let bf = bfOpt.length ? bfOpt[0] : city.food.b[0];
+        let lu = luOpt.length ? luOpt[0] : city.food.l[0];
+        let di = diOpt.length ? diOpt[0] : city.food.d[0];
+        usedBreakfast.push(bf);
+        usedLunch.push(lu);
+        usedDinner.push(di);
 
-        // Main generate logic
-        document.getElementById("tripForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const loading = document.getElementById("loading");
-            const result = document.getElementById("resultSection");
-            loading.classList.remove("hidden");
-            result.classList.add("hidden");
+        if(isFullDay && usedFull.length < city.full.length) {
+            let spot = city.full.filter(x => !usedFull.includes(x))[0];
+            usedFull.push(spot);
+            schedule = [
+                {t:"08:00-09:00",a:`Breakfast: ${bf}`,c:Math.round(perDayCost*0.1)},
+                {t:"09:30-17:30",a:`${spot} (Full Day)`,c:Math.round(perDayCost*0.6)},
+                {t:"12:30-14:00",a:"Lunch: Park Meal",c:Math.round(perDayCost*0.18)},
+                {t:"18:00-20:00",a:`Dinner: ${di}`,c:Math.round(perDayCost*0.12)}
+            ];
+        } else {
+            let mornSpot = city.spot.filter(x => !usedNormal.includes(x))[0];
+            let aftSpot = city.spot.filter(x => !usedNormal.includes(x) && x !== mornSpot)[0];
+            usedNormal.push(mornSpot, aftSpot);
+            schedule = [
+                {t:"08:00-09:00",a:`Breakfast: ${bf}`,c:Math.round(perDayCost*0.1)},
+                {t:"09:30-12:00",a:mornSpot,c:Math.round(perDayCost*0.28)},
+                {t:"12:30-14:00",a:`Lunch: ${lu}`,c:Math.round(perDayCost*0.22)},
+                {t:"14:30-17:30",a:aftSpot,c:Math.round(perDayCost*0.25)},
+                {t:"18:00-20:00",a:`Dinner: ${di}`,c:Math.round(perDayCost*0.15)}
+            ];
+        }
+        currentPlan.push({day: day, sched: schedule});
+    }
 
-            const budget = document.getElementById("budget").value;
-            const dates = document.getElementById("tripDates")._flatpickr.selectedDates;
-            const days = Math.ceil((dates[1]-dates[0])/86400000)+1;
-            const start = dates[0].toISOString().split("T")[0];
-            const end = dates[1].toISOString().split("T")[0];
+    // 渲染行程
+    renderTrip();
+    loading.classList.add("hidden");
+    result.classList.remove("hidden");
+}
 
-            await new Promise(r => setTimeout(r, 2200));
+// AI 修改行程（全局函数，100% 触发）
+function applyAIChange() {
+    const aiText = document.getElementById("aiInput").value.trim().toLowerCase();
+    if(!aiText || currentPlan.length === 0) {
+        alert("Please enter a valid command (e.g. cheaper, add shopping, change food)");
+        return;
+    }
 
-            // Copy arrays to avoid repetition
-            let usedNormal = [];
-            let usedFullDay = [];
-            let plan = [];
-
-            for (let day=1; day<=days; day++) {
-                let isFullDay = (day <= 2 && days >= 3) || (Math.random() < 0.3);
-                let schedule;
-
-                if (isFullDay && usedFullDay.length < fullDaySpots.length) {
-                    // Full day: Disney / Ocean Park etc.
-                    let availFull = fullDaySpots.filter(s => !usedFullDay.includes(s));
-                    let spot = availFull[Math.floor(Math.random()*availFull.length)];
-                    usedFullDay.push(spot);
-
-                    let dining = spot.includes("Disney") ? getDisneyMeal() : spot.includes("Ocean") ? getOceanParkMeal() : getLunch();
-
-                    schedule = [
-                        { time: "08:00-09:00", act: `Breakfast: ${getBreakfast()}`, cost: Math.round(budget/days/2*0.12) },
-                        { time: "09:30-17:30", act: `${spot} (Full Day Visit)`, cost: Math.round(budget/days/2*0.6) },
-                        { time: "12:30-14:00", act: `Lunch Inside Park: ${dining}`, cost: Math.round(budget/days/2*0.18) },
-                        { time: "18:00-20:00", act: `Dinner: ${getDinner()}`, cost: Math.round(budget/days/2*0.1) }
-                    ];
-                } else {
-                    // Morning spot
-                    let availMorn = normalSpots.filter(s => !usedNormal.includes(s));
-                    let morn = availMorn[Math.floor(Math.random()*availMorn.length)];
-                    usedNormal.push(morn);
-
-                    // Afternoon spot (no repeat)
-                    let availAft = normalSpots.filter(s => !usedNormal.includes(s));
-                    let aft = availAft[Math.floor(Math.random()*availAft.length)];
-                    usedNormal.push(aft);
-
-                    schedule = [
-                        { time: "08:00-09:00", act: `Breakfast: ${getBreakfast()}`, cost: Math.round(budget/days/2*0.12) },
-                        { time: "09:30-12:00", act: morn, cost: Math.round(budget/days/2*0.28) },
-                        { time: "12:30-14:00", act: `Lunch: ${getLunch()}`, cost: Math.round(budget/days/2*0.2) },
-                        { time: "14:30-17:30", act: aft, cost: Math.round(budget/days/2*0.25) },
-                        { time: "18:00-20:00", act: `Dinner: ${getDinner()}`, cost: Math.round(budget/days/2*0.15) }
-                    ];
-                }
-
-                plan.push({ day, schedule });
+    const city = cityData[currentCity] || cityData["hong kong"];
+    
+    // 遍历行程修改
+    currentPlan.forEach(day => {
+        day.sched.forEach(item => {
+            // 降价
+            if(aiText.includes("cheap")) {
+                if(!item.a.includes("Full Day")) item.c = Math.round(item.c * 0.75);
             }
-
-            // Render result
-            document.getElementById("tripInfo").innerHTML = `
-                <div class="flex gap-2 items-center"><i class="fa fa-map-marker text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Destination</p><p class="font-medium">HONG KONG</p></div></div>
-                <div class="flex gap-2 items-center"><i class="fa fa-money text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Budget</p><p class="font-medium">HK$${Number(budget).toLocaleString()}</p></div></div>
-                <div class="flex gap-2 items-center"><i class="fa fa-calendar text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Period</p><p class="font-medium">${start} to ${end}</p></div></div>
-                <div class="flex gap-2 items-center"><i class="fa fa-cutlery text-primary text-xl"></i><div><p class="text-gray-500 text-sm">Food</p><p class="font-medium">Local Hong Kong Cuisine</p></div></div>
-            `;
-
-            let out = document.getElementById("tripDetail");
-            out.innerHTML = "";
-            plan.forEach(day => {
-                let html = `<div class="border rounded-xl overflow-hidden mb-6">
-                    <div class="bg-primary/10 p-4 font-bold text-lg">Day ${day.day}</div>
-                    <div class="p-5 space-y-4">`;
-                day.schedule.forEach(item => {
-                    html += `
-                    <div class="flex gap-4 pb-4 border-b">
-                        <div class="w-32"><span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">${item.time}</span></div>
-                        <div class="flex-1"><h4 class="font-bold text-lg">${item.act}</h4><p class="text-primary font-medium">HK$${item.cost}</p></div>
-                    </div>`;
-                });
-                html += "</div></div>";
-                out.innerHTML += html;
-            });
-
-            loading.classList.add("hidden");
-            result.classList.remove("hidden");
+            // 加购物
+            if(aiText.includes("shop")) {
+                if(!item.a.includes("Full Day") && !item.a.includes("Shopping")) {
+                    item.a += " + Shopping";
+                }
+            }
+            // 换食物
+            if(aiText.includes("food")) {
+                if(item.a.includes("Breakfast")) {
+                    item.a = "Breakfast: " + city.food.b[Math.floor(Math.random() * city.food.b.length)];
+                }
+                if(item.a.includes("Lunch") && !item.a.includes("Park Meal")) {
+                    item.a = "Lunch: " + city.food.l[Math.floor(Math.random() * city.food.l.length)];
+                }
+                if(item.a.includes("Dinner")) {
+                    item.a = "Dinner: " + city.food.d[Math.floor(Math.random() * city.food.d.length)];
+                }
+            }
         });
-    </script>
+    });
+
+    // 重新渲染
+    renderTrip();
+    alert("✅ AI updated your itinerary successfully!");
+}
+
+// 渲染行程
+function renderTrip() {
+    // 渲染基本信息
+    document.getElementById("tripInfo").innerText = 
+        `Destination: ${currentCity.toUpperCase()} | Budget: HK$${currentBudget.toLocaleString()} | Travelers: ${currentPeople} | Days: ${currentDays}`;
+    
+    // 渲染详细行程
+    let html = "";
+    currentPlan.forEach(day => {
+        html += `<div class="border rounded overflow-hidden">
+            <div class="bg-blue-100 p-2 font-bold text-sm">Day ${day.day}</div>
+            <div class="p-2 text-sm space-y-1">`;
+        day.sched.forEach(item => {
+            html += `<div class="border-b pb-1">
+                <span class="bg-blue-100 text-xs px-1 rounded">${item.t}</span>
+                <div class="font-medium">${item.a}</div>
+                <div class="text-primary text-xs">HK$${item.c}</div>
+            </div>`;
+        });
+        html += `</div></div>`;
+    });
+    document.getElementById("tripDetail").innerHTML = html;
+}
+</script>
 </body>
 </html>
